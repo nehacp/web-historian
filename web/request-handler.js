@@ -40,6 +40,31 @@ exports.handleRequest = function (req, res) {
         res.end();
       }
     });
+  } else if (method ==='POST') {
+    let file;
+    let body = [];
+    req.on('data',  (chunk) => {
+      body.push(chunk);
+    });
+
+    req.on('end',() => {
+      file = body.toString().match(/=(.+)/)[1] + '\n';
+    })
+    archive.isUrlArchived(file, (isArchived) => {
+      if ( isArchived ) {
+        fs.readFile(path.join(archive.paths.archivedSites, pathName), function(err, data) {
+          if ( err ) {
+            console.error(err);
+          } else {
+            res.end(data.toString());
+          }
+        });
+      } else {
+        res.writeHead(302, helpers.headers);
+        archive.addUrlToList (file, () => {});
+        res.end();
+      }
+    });
   } else {
     res.end(archive.paths.list);
   }
