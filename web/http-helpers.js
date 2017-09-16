@@ -53,7 +53,7 @@ exports.collectData = function (request, callback) {
 
 exports.processData = function (isArchived, data, response, statusCode) {
   if (isArchived) {
-    fs.readdir(archive.paths.archivedSites, function(err, contents) {
+    fs.readFile(`${archive.paths.archivedSites}/${data}`, function(err, contents) {
       err ? console.error(err) : exports.handleResponse(response, 200, contents.toString());
     });
   } else {
