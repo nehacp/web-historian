@@ -83,6 +83,7 @@ describe('archive helpers', function() {
       fs.writeFileSync(archive.paths.list, urlArray.join('\n'));
 
       archive.readListOfUrls(function(urls) {
+        console.log(urls);
         expect(urls).to.deep.equal(urlArray);
         done();
       });
@@ -155,4 +156,3 @@ describe('archive helpers', function() {
     });
   });
 });
-
