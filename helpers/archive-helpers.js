@@ -26,14 +26,25 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
-  fs.readFile(exports.paths.list, function(text) {
-    var textByLine = text.split("\n");
-    conosole.log(textByLine);
-    callback(textByLine);
+  fs.readFile(exports.paths.list, function(err, text) {
+    if ( err ) {
+      console.error(err);
+    } else {
+      var textByLine = text.toString().split("\n");
+      callback(textByLine);
+    }
   });
 };
 
 exports.isUrlInList = function(url, callback) {
+  fs.readFile(exports.paths.list, function(err, text) {
+    if ( err ) {
+      console.error(err);
+    } else {
+      var exists = text.toString().includes(url);
+      callback(exists);
+    }
+  });
 };
 
 exports.addUrlToList = function(url, callback) {
