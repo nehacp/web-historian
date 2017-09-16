@@ -7,12 +7,13 @@ var helpers = require('./http-helpers.js');
 const actions = {
   'GET': function (req, res) {
     const path = helpers.getPath(req.url);
-    if (path === '/' || path.startsWith('/public')) {
+  //  debugger;
+    if (path === '/' || path.startsWith('/public') || path.includes('loading')) {
       helpers.serveAssets(path, req, res);
     } else {
       let domain = path.slice(1);
       archive.isUrlArchived(domain, (isArchived) => {
-        helpers.processData(isArchived, domain, res, 404);
+        helpers.processData(isArchived, domain, req, res, 200, 404);
       });
     }
 
@@ -21,7 +22,7 @@ const actions = {
   'POST': function (req, res) {
     helpers.collectData(req, (data) => {
       archive.isUrlArchived(data, function (isArchived) {
-        helpers.processData(isArchived, data, res, 302);
+        helpers.processData(isArchived, data, req, res, 302, 302);
       });
     });
   }
