@@ -30,7 +30,7 @@ exports.readListOfUrls = function(callback) {
     if ( err ) {
       console.error(err);
     } else {
-      var textByLine = text.toString().split("\n");
+      var textByLine = text.toString().split('\n');
       callback(textByLine);
     }
   });
@@ -48,9 +48,17 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
+  fs.appendFile(exports.paths.list, url, (err) => {
+    if (err) { throw err; }
+    console.log('The "data to append" was appended to file!');
+    callback();
+  });
 };
 
 exports.isUrlArchived = function(url, callback) {
+  fs.readdir(exports.paths.archivedSites, (err, files) => {
+    callback(files.some(file => file === url));
+  });
 };
 
 exports.downloadUrls = function(urls) {
