@@ -7,12 +7,9 @@ var helpers = require('./http-helpers.js');
 const actions = {
   'GET': function (req, res) {
     const path = helpers.getPath(req.url);
-    if (path === '/' || path.startsWith(archive.paths.siteAssets)) {
-      //console.log('Path for assets', path);
-      //is not rendering CSS
+    if (path === '/' || path.startsWith('/public')) {
       helpers.serveAssets(path, req, res);
     } else {
-      //console.log('path check for CSS', path);
       let domain = path.slice(1);
       archive.isUrlArchived(domain, (isArchived) => {
         helpers.processData(isArchived, domain, res, 404);
@@ -25,7 +22,7 @@ const actions = {
     helpers.collectData(req, (data) => {
       archive.isUrlArchived(data, function (isArchived) {
         helpers.processData(isArchived, data, res, 302);
-      });   
+      });
     });
   }
 };

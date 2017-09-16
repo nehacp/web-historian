@@ -24,9 +24,7 @@ exports.headers = {
 // As you progress, keep thinking about what helper functions you can put here!
 
 exports.serveAssets = function(path, req, res) {
-  //console.log('PATH!!!!', path);
-  let endpoint = (path === '/') ? `${archive.paths.siteAssets}/index.html` : path;
-  //const endpoint = `${archive.paths.siteAssets + destination}`;
+  let endpoint = (path === '/') ? `${archive.paths.siteAssets}/index.html` : archive.paths.siteAssetDir + path;
   fs.readFile(endpoint, function(err, data) {
     if (err) {
       console.error(err);
@@ -41,7 +39,7 @@ exports.getPath = function(url) {
   return parsedUrl.pathname;
 };
 
-exports.collectData = function (request, callback) { 
+exports.collectData = function (request, callback) {
   let data = '';
   request.on('data', (chunk) => {
     data += chunk;
@@ -66,4 +64,3 @@ exports.handleResponse = function (response, statusCode, data) {
   response.writeHead(statusCode, exports.headers);
   response.end(data);
 };
-
