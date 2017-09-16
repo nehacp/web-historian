@@ -50,7 +50,6 @@ exports.isUrlInList = function(url, callback) {
 exports.addUrlToList = function(url, callback) {
   fs.appendFile(exports.paths.list, url, (err) => {
     if (err) { throw err; }
-    console.log('The "data to append" was appended to file!');
     callback();
   });
 };
@@ -62,4 +61,9 @@ exports.isUrlArchived = function(url, callback) {
 };
 
 exports.downloadUrls = function(urls) {
+  urls.forEach( (url) => {
+    fs.appendFile(exports.paths.archivedSites + '/' + url, 'empty string', (err) => {
+      if (err) { throw err; }
+    });
+  });
 };
