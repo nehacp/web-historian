@@ -24,7 +24,7 @@ exports.headers = {
 // As you progress, keep thinking about what helper functions you can put here!
 
 exports.serveAssets = function(path, req, res) {
-	//console.log('PATH!!!!', path);
+  //console.log('PATH!!!!', path);
   let endpoint = (path === '/') ? `${archive.paths.siteAssets}/index.html` : path;
   //const endpoint = `${archive.paths.siteAssets + destination}`;
   fs.readFile(endpoint, function(err, data) {

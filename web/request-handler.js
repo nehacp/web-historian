@@ -4,7 +4,7 @@ var helpers = require('./http-helpers.js');
 
 
 
-let actions = {
+const actions = {
   'GET': function (req, res) {
     const path = helpers.getPath(req.url);
     if (path === '/' || path.startsWith(archive.paths.siteAssets)) {
@@ -30,13 +30,8 @@ let actions = {
   }
 };
 
+exports.actions = actions;
+
 exports.handleRequest = function (req, res) {
-  const {method} = req;
-  if (method === 'GET') {
-    actions[method](req, res);   
-  } else if (method === 'POST') {
-    actions[method](req, res);
-  } else {
-    helpers.handleResponse(res, 404);
-  }
+  actions[req.method] ? actions[req.method](req, res) : helpers.handleResponse(res, 404);
 };
