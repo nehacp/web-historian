@@ -2,18 +2,17 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 
-/*
- * You will need to reuse the same paths many times over in the course of this sprint.
- * Consider using the `paths` object below to store frequently used file paths. This way,
- * if you move any files, you'll only need to change your code in one place! Feel free to
- * customize it in any way you wish.
- */
-
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),
   archivedSites: path.join(__dirname, '../archives/sites'),
-  list: path.join(__dirname, '../archives/sites.txt')
+  list: path.join(__dirname, '../archives/sites.txt'),
 };
+
+// exports.assets = {
+//   '/styles.css': `${exports.paths.siteAssets}/styles.css`,
+//   '/loading.html': `${exports.paths.siteAssets}/loading.html`,
+//   '/': `${exports.paths.siteAssets}/index.html`
+// };
 
 // Used for stubbing paths for tests, do not modify
 exports.initialize = function(pathsObj) {
@@ -27,7 +26,7 @@ exports.initialize = function(pathsObj) {
 
 exports.readListOfUrls = function(callback) {
   fs.readFile(exports.paths.list, function(err, text) {
-    if ( err ) {
+    if (err) {
       console.error(err);
     } else {
       var textByLine = text.toString().split('\n');
@@ -38,7 +37,7 @@ exports.readListOfUrls = function(callback) {
 
 exports.isUrlInList = function(url, callback) {
   fs.readFile(exports.paths.list, function(err, text) {
-    if ( err ) {
+    if (err) {
       console.error(err);
     } else {
       var exists = text.toString().includes(url);
@@ -48,7 +47,6 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
-  console.log('URL EXAMPLE',url);
   fs.appendFile(exports.paths.list, url, (err) => {
     if (err) { throw err; }
     callback();
@@ -63,7 +61,7 @@ exports.isUrlArchived = function(url, callback) {
 
 exports.downloadUrls = function(urls) {
   urls.forEach( (url) => {
-    fs.appendFile(exports.paths.archivedSites + '/' + url, '', (err) => {
+    fs.appendFile(`${exports.paths.archivedSites}/${url}`, '', (err) => {
       if (err) { throw err; }
     });
   });

@@ -1,71 +1,42 @@
-var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var fs = require('fs');
-var parseUrl = require('url');
 var helpers = require('./http-helpers.js');
-// require more modules/folders here!
 
-exports.getPath = function(url) {
-  const parsedUrl = parseUrl.parse(url, true);
-  //console.log(parsedUrl);
-  return parsedUrl.pathname;
+
+
+let actions = {
+  'GET': function (req, res) {
+    const path = helpers.getPath(req.url);
+    if (path === '/' || path.startsWith(archive.paths.siteAssets)) {
+      //console.log('Path for assets', path);
+      //is not rendering CSS
+      helpers.serveAssets(path, req, res);
+    } else {
+      //console.log('path check for CSS', path);
+      let domain = path.slice(1);
+      archive.isUrlArchived(domain, (isArchived) => {
+        helpers.processData(isArchived, domain, res, 404);
+      });
+    }
+
+  },
+
+  'POST': function (req, res) {
+    helpers.collectData(req, (data) => {
+      archive.isUrlArchived(data, function (isArchived) {
+        helpers.processData(isArchived, data, res, 302);
+      });   
+    });
+  }
 };
 
 exports.handleRequest = function (req, res) {
-
-  const {method, url} = req;
-  const pathName = exports.getPath(url);
-  if ( method === 'GET' && (pathName === '/' || pathName.startsWith('/public')) ) {
-    var destination = (pathName === '/') ? '/index.html' : '/styles.css';
-    fs.readFile(path.join(archive.paths.siteAssets, destination), function(err, data) {
-      if ( err ) {
-        console.error(err);
-      } else {
-        res.end(data.toString());
-      }
-    });
-  } else if ( method === 'GET' ) {
-    let file = pathName.slice(1);
-    archive.isUrlArchived(file, (isArchived) => {
-      if ( isArchived ) {
-        fs.readFile(path.join(archive.paths.archivedSites, pathName), function(err, data) {
-          if ( err ) {
-            console.error(err);
-          } else {
-            res.end(data.toString());
-          }
-        });
-      } else {
-        res.writeHead(404, helpers.headers);
-        res.end();
-      }
-    });
-  } else if (method ==='POST') {
-    let file;
-    let body = [];
-    req.on('data',  (chunk) => {
-      body.push(chunk);
-    });
-
-    req.on('end',() => {
-      file = body.toString().match(/=(.+)/)[1] + '\n';
-    })
-    archive.isUrlArchived(file, (isArchived) => {
-      if ( isArchived ) {
-        fs.readFile(path.join(archive.paths.archivedSites, pathName), function(err, data) {
-          if ( err ) {
-            console.error(err);
-          } else {
-            res.end(data.toString());
-          }
-        });
-      } else {
-        res.writeHead(302, helpers.headers);
-        archive.addUrlToList (file, () => {});
-        res.end();
-      }
-    });
+  const {method} = req;
+  if (method === 'GET') {
+    actions[method](req, res);   
+  } else if (method === 'POST') {
+    actions[method](req, res);
   } else {
-    res.end(archive.paths.list);
+    helpers.handleResponse(res, 404);
   }
 };
