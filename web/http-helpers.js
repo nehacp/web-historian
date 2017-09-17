@@ -1,4 +1,5 @@
 var path = require('path');
+var http = require('http');
 var fs = require('fs');
 var archive = require('../helpers/archive-helpers');
 var parseUrl = require('url');
@@ -25,7 +26,6 @@ exports.headers = {
 // As you progress, keep thinking about what helper functions you can put here!
 
 exports.serveAssets = function(path, req, res, statusCode = 200) {
-  debugger;
   if (path === '/') {
     path = `${archive.paths.siteAssets}/index.html`;
   // } else if (path.includes('loading')) {
@@ -83,7 +83,7 @@ exports.processData = function (isArchived, data, req, response, foundCode, notF
     if (foundCode === 200) {
       exports.handleResponse(headers, response, notFound);
     } else {
-      archive.addUrlToList (data, () => {});
+      archive.addUrlToList (data + '\n', () => {});
       exports.serveAssets('/public/loading.html', req, response, notFound);
     }
   }
@@ -92,4 +92,36 @@ exports.processData = function (isArchived, data, req, response, foundCode, notF
 exports.handleResponse = function (headers, response, statusCode, data) {
   response.writeHead(statusCode, headers);
   response.end(data);
+};
+
+// exports.downloadSite = function (site) {
+//   const options = {
+//     host: site,
+//     port: 80,
+//     path: '/',
+//     headers: exports.headers
+//   };
+//   options.headers['Content-Type'] = 'application/json';
+//   console.log('looking for site', site);
+//   http.get(JSON.stringify(options), (data) => {
+//     const {statusCode} = data;
+//     if ( statusCode !== 200 ) {
+//       console.error('Did not get data!@!!@', data);
+//     } else {
+//       console.log('WE GOT DATA', data);
+//     }
+//   });
+// }
+
+var request = require('request');
+exports.downloadSite2 = function(site) {
+  request('http://' + site, function(err, res, body) {
+    if ( err ) {
+      console.error(err);
+    } else {
+      fs.appendFile(`${archive.paths.archivedSites}/${site}`, body.toString(), (err) => {
+        if (err) { throw err; }
+      });
+    }
+  });
 };

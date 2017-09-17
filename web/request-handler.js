@@ -7,7 +7,6 @@ var helpers = require('./http-helpers.js');
 const actions = {
   'GET': function (req, res) {
     const path = helpers.getPath(req.url);
-  //  debugger;
     if (path === '/' || path.startsWith('/public') || path.includes('loading')) {
       helpers.serveAssets(path, req, res);
     } else {
@@ -21,6 +20,7 @@ const actions = {
 
   'POST': function (req, res) {
     helpers.collectData(req, (data) => {
+      data = data.slice(0, -1);
       archive.isUrlArchived(data, function (isArchived) {
         helpers.processData(isArchived, data, req, res, 302, 302);
       });

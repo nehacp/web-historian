@@ -1,4 +1,5 @@
 var fs = require('fs');
+// var worker = require('../workers/htmlfetcher.js');
 
 // Sync is ok here because this is called just once on startup.
 module.exports = function (basePath) {
@@ -20,4 +21,6 @@ module.exports = function (basePath) {
     // We use fs.mkdirSync to create the folder
     fs.mkdirSync(basePath + '/sites');
   }
+
+  // worker.checkIfArchived();
 };
